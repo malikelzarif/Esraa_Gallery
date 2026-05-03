@@ -2383,3 +2383,126 @@ textarea {
     transition-duration: 0.001ms !important;
   }
 }
+/* =========================================================
+   FINAL SAFE POLISH LAYER
+   Keeps the global burger-menu header, strengthens page links,
+   improves mobile polish, and avoids layout breaks.
+   Additive only: does not remove existing features.
+   ========================================================= */
+
+html {
+  scroll-padding-top: var(--total-header-height, 110px);
+}
+
+/* Make burger header feel intentional across every page */
+.site-header .main-nav {
+  grid-template-columns: minmax(44px, 1fr) auto minmax(44px, 1fr);
+}
+
+.site-header .brand-logo-link {
+  justify-self: center;
+}
+
+.site-header .nav-left {
+  justify-self: start;
+}
+
+.site-header .nav-right {
+  justify-self: end;
+}
+
+/* Make any old desktop navigation disappear globally */
+.site-header .desktop-nav-list,
+.site-header .desktop-nav-list-right {
+  display: none !important;
+}
+
+.site-header .menu-open-btn {
+  display: inline-flex !important;
+}
+
+/* Better support when Cart is an anchor in the burger menu */
+.mobile-menu-nav a.mobile-cart-link {
+  width: 100%;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* Prevent long menu labels from crowding */
+.mobile-menu-nav a,
+.mobile-cart-link {
+  line-height: 1.25;
+}
+
+/* Current page visual support if final-polish.js adds aria-current */
+.mobile-menu-nav a[aria-current="page"] {
+  color: var(--color-gold);
+}
+
+/* Make card buttons less likely to overflow on smaller product cards */
+.product-actions {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.product-actions .btn {
+  min-width: 0;
+}
+
+/* Better visible focus inside drawers and overlays */
+.mobile-menu :focus-visible,
+.cart-drawer :focus-visible,
+.search-overlay :focus-visible,
+.quick-view-modal :focus-visible {
+  outline-offset: 2px;
+}
+
+/* Keep hidden checkout confirmation truly hidden until JS reveals it */
+[hidden] {
+  display: none !important;
+}
+
+/* Avoid a too-tall hero if mobile browser bars shrink viewport */
+@supports not (height: 100dvh) {
+  .hero-section,
+  .mobile-menu,
+  .cart-drawer {
+    min-height: 100vh;
+    height: 100vh;
+  }
+}
+
+/* Safer footer button width on tiny devices */
+.footer-column .btn {
+  max-width: 100%;
+}
+
+/* Smooth but safer image presentation */
+.collection-card img,
+.product-image,
+.product-hover-image,
+.season-image-wrap img,
+.custom-image-wrap img,
+.detail-card img,
+.about-card > img,
+.instagram-grid img {
+  background: var(--color-cream);
+}
+
+/* Small phone header polish */
+@media (max-width: 420px) {
+  .site-header .main-nav {
+    grid-template-columns: 42px 1fr 84px;
+  }
+
+  .site-header .brand-logo-link {
+    justify-self: center;
+  }
+
+  .site-header .brand-logo {
+    width: 106px;
+  }
+
+  .site-header .header-icons {
+    justify-content: flex-end;
+  }
+}

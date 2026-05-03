@@ -1711,3 +1711,167 @@ function initEsraaGalleryWebsite() {
 }
 
 document.addEventListener("DOMContentLoaded", initEsraaGalleryWebsite);
+/* =========================================================
+   ESRAA GALLERY - final-polish.js
+   Safe global polish patch.
+   Include this AFTER script.js on every page:
+   <script src="final-polish.js" defer></script>
+
+   Purpose:
+   - Keeps burger menu links pointing to individual page files
+   - Fixes old same-page #section links if they still exist
+   - Adds current-page indicator
+   - Adds safer external-link attributes
+   - Does not change cart/search/quick-view/product logic
+   ========================================================= */
+
+(function () {
+  "use strict";
+
+  const ROUTES = [
+    ["Home", "index.html"],
+    ["Shop All Products", "shop.html"],
+    ["New Arrivals", "shop.html#new-arrivals"],
+    ["Best Sellers", "shop.html#best-sellers"],
+    ["On Sale", "shop.html#on-sale"],
+    ["Summer Collection", "shop.html#summer"],
+    ["Winter Collection", "shop.html#winter"],
+    ["Bags & Accessories", "shop.html#bags-accessories"],
+    ["Product Details / Quick View", "product-details.html"],
+    ["Cart", "cart.html"],
+    ["Checkout / Order Request", "checkout.html"],
+    ["Custom Orders", "custom-orders.html"],
+    ["About", "about.html"],
+    ["Contact", "contact.html"],
+    ["Exchange & Refund Policy", "refund-policy.html"],
+    ["FAQ", "faq.html"],
+    ["Thank You / Order Confirmation", "thank-you.html"]
+  ];
+
+  const SAME_PAGE_TO_PAGE = {
+    "#home": "index.html",
+    "#shop": "shop.html",
+    "#new-arrivals": "shop.html#new-arrivals",
+    "#best-sellers": "shop.html#best-sellers",
+    "#on-sale": "shop.html#on-sale",
+    "#summer": "shop.html#summer",
+    "#winter": "shop.html#winter",
+    "#bags-accessories": "shop.html#bags-accessories",
+    "#product-details": "product-details.html",
+    "#cart": "cart.html",
+    "#checkout": "checkout.html",
+    "#custom-orders": "custom-orders.html",
+    "#about": "about.html",
+    "#contact": "contact.html",
+    "#refund-policy": "refund-policy.html",
+    "#faq": "faq.html",
+    "#thank-you": "thank-you.html",
+    "index.html#home": "index.html",
+    "index.html#shop": "shop.html",
+    "index.html#checkout": "checkout.html",
+    "index.html#custom-orders": "custom-orders.html",
+    "index.html#about": "about.html",
+    "index.html#contact": "contact.html",
+    "index.html#refund-policy": "refund-policy.html",
+    "index.html#faq": "faq.html",
+    "index.html#thank-you": "thank-you.html"
+  };
+
+  function normalizePathname(pathname) {
+    const last = pathname.split("/").filter(Boolean).pop() || "index.html";
+    return last === "Esraa_Gallery" ? "index.html" : last;
+  }
+
+  function currentFileName() {
+    const file = normalizePathname(window.location.pathname);
+    return file.includes(".html") ? file : "index.html";
+  }
+
+  function buildBurgerMenu() {
+    const nav = document.querySelector(".mobile-menu-nav");
+    if (!nav) return;
+
+    nav.setAttribute("aria-label", "All website pages");
+    nav.innerHTML = ROUTES.map(([label, href]) => {
+      const isCart = href === "cart.html";
+      const className = isCart ? ' class="mobile-cart-link"' : "";
+      const cartCount = isCart
+        ? ' <span class="cart-count-inline" data-cart-count>0</span>'
+        : "";
+
+      return `<a href="${href}"${className} data-menu-link>${label}${cartCount}</a>`;
+    }).join("");
+  }
+
+  function normalizeLinks() {
+    document.querySelectorAll("a[href]").forEach((link) => {
+      const href = link.getAttribute("href");
+
+      if (SAME_PAGE_TO_PAGE[href]) {
+        link.setAttribute("href", SAME_PAGE_TO_PAGE[href]);
+      }
+
+      if (link.hostname && link.hostname !== window.location.hostname) {
+        link.setAttribute("target", "_blank");
+        link.setAttribute("rel", "noopener noreferrer");
+      }
+    });
+  }
+
+  function markCurrentPage() {
+    const current = currentFileName();
+
+    document.querySelectorAll(".mobile-menu-nav a[href]").forEach((link) => {
+      const hrefFile = (link.getAttribute("href") || "").split("#")[0] || "index.html";
+      if (hrefFile === current) {
+        link.setAttribute("aria-current", "page");
+      } else {
+        link.removeAttribute("aria-current");
+      }
+    });
+  }
+
+  function closeMenuOnPageLinkClick() {
+    document.addEventListener("click", (event) => {
+      const menuLink = event.target.closest(".mobile-menu-nav a[data-menu-link]");
+      if (!menuLink) return;
+
+      const menu = document.querySelector("[data-mobile-menu]");
+      const backdrop = document.querySelector("[data-menu-backdrop]");
+      const openButton = document.querySelector("[data-menu-open]");
+
+      if (menu) {
+        menu.classList.remove("is-open");
+        menu.setAttribute("aria-hidden", "true");
+      }
+
+      if (backdrop) {
+        backdrop.classList.remove("is-visible");
+        setTimeout(() => {
+          if (!backdrop.classList.contains("is-visible")) {
+            backdrop.hidden = true;
+          }
+        }, 260);
+      }
+
+      if (openButton) {
+        openButton.setAttribute("aria-expanded", "false");
+      }
+
+      document.body.classList.remove("no-scroll");
+    });
+  }
+
+  function finalPolishInit() {
+    buildBurgerMenu();
+    normalizeLinks();
+    markCurrentPage();
+    closeMenuOnPageLinkClick();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", finalPolishInit);
+  } else {
+    finalPolishInit();
+  }
+})();
