@@ -1,0 +1,17 @@
+# =========================================================
+# ESRAA GALLERY - robots.txt
+# Allows search engines to crawl the public website pages.
+# Update the domain before publishing.
+# =========================================================
+
+User-agent: *
+Allow: /
+
+# Do not index private or unfinished folders if you create them later.
+Disallow: /admin/
+Disallow: /private/
+Disallow: /drafts/
+Disallow: /test/
+
+# Sitemap location
+Sitemap: https://www.yourdomain.com/sitemap.xml
